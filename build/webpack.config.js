@@ -1,17 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const  CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack')
 const assist = require('./assist')
 const ENV  = process.env.node_env
-
+const devPlugs = [new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()]
 module.exports = {
     entry: ['./src/main.js'],
     output: {
         filename: '[name].[hash].js',
         path: path.resolve(__dirname, '../dist')
     },
-    mode:'none',
     module:{
         rules:[
             {
@@ -64,7 +63,7 @@ module.exports = {
                 //这个loader可以让图片路径不用require，内部已经做了处理
                 options: {
                     limit: 10000,
-                    name: 'images/[name].[ext]?[hash]'
+                    name: 'static/images/[name].[ext]?[hash]'
                 }
             },
             {
@@ -89,19 +88,12 @@ module.exports = {
     } ,
     devtool: "cheap-module-eval-source-map",
     plugins: [
-        new CleanWebpackPlugin(['dist'],{
-            root:path.resolve(__dirname,'../'),
-            exclude:['bundle.js']
-        }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html',
             inject: true,
             inline:true
-        }),
-        new webpack.NamedModulesPlugin(),
-        new webpack.HotModuleReplacementPlugin()
-
+        })
     ]
 
 };
@@ -112,4 +104,11 @@ if(ENV !=='development'){
         filename:'static/javascript/[name].[chunkhash].js',
         chunkFilename:'static/javascript/[name].[chunkhash].js'
     })
+    let cssl = assist.setCss()
+    module.exports.module.rules[2].use = cssl.css
+    module.exports.module.rules[3].use = cssl.scss
+    module.exports.module.rules[0].options.loaders = cssl
+}else{
+    module.exports.plugins = [...module.exports.plugins,...devPlugs]
+
 }

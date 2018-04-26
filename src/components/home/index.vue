@@ -1,7 +1,7 @@
 <template>
     <div>
         3311
-        <!--<img src="./images/more.png" alt="">-->
+        <img src="./images/more.png" alt="">
     </div>
 </template>
 
@@ -10,6 +10,7 @@
 </style>
 
 <script>
+    let p = require('./images/more.png')
     export default {
         data(){
             return {
@@ -21,3 +22,9 @@
         }
     }
 </script>
+
+<style scoped>
+    div{
+        background: blue;
+    }
+</style>

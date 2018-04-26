@@ -5,6 +5,7 @@ const path = require('path')
 const ENV = process.env.node_env
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin')
 const webconfig = require('./webpack.config.js')
+const  CleanWebpackPlugin = require('clean-webpack-plugin')
 const CONT = {
     'development':{
         a:'"deve"',
@@ -19,9 +20,14 @@ module.exports = {
         return CONT[ENV]
     },
     plugs(){
-
-
         return [
+
+            new CleanWebpackPlugin(['dist'],
+                {
+                    root: path.resolve(__dirname,'../'),
+                    // dry:false//启用删除文件
+                }
+            ),
             new webpack.HashedModuleIdsPlugin(),
             new ExtractTextWebpackPlugin({
                 filename:'static/style/[name].[contenthash].css'
@@ -36,7 +42,6 @@ module.exports = {
             new webpack.optimize.CommonsChunkPlugin({
                 name: "manifest",
                 minChunks: Infinity,
-                chunks:['common']
             }),
         ]
     },
