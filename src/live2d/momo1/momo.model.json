@@ -1,0 +1,21 @@
+{
+    "type": "Live2D Model Setting",
+    "name": "momo",
+    "model": "momo.moc",
+    "textures": [
+        "momo.1024/texture_00.png",
+        "momo.1024/texture_01.png"
+    ],
+    "motions": {
+        "tap_body": [
+            { "file": "motions/walk.mtn" },
+            { "file": "motions/talk1.mtn" },
+            { "file": "motions/jump.mtn" }
+        ],
+        "a": [
+            { "file": "motions/walk.mtn" },
+            { "file": "motions/talk1.mtn" },
+            { "file": "motions/jump.mtn" }
+        ]
+    }
+}

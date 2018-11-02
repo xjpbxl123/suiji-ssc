@@ -1,0 +1,30 @@
+{
+	"type": "Live2D Model Setting",
+	"name": "shouxing",
+	"model": "shouxing.moc",
+	"textures": [
+		"shouxing.1024/texture_00.png"
+	],
+	"hit_areas":
+	[
+		{"name":"body","id":"D_REF.PT_SOBA_01"}
+	],
+	"motions":
+	{
+		"idle":
+		[
+			
+        ],
+       "shake":
+		[
+			{"file":"motions/shouxing_cry.mtn" ,"fade_in":500, "fade_out":200},
+			{"file":"motions/shouxing_No.mtn" ,"fade_in":500, "fade_out":200},
+			{"file":"motions/shouxing_smile.mtn" ,"fade_in":500, "fade_out":200},
+			{"file":"motions/shouxing_Sprise.mtn" ,"fade_in":500, "fade_out":200}
+		],
+		"tap_body":
+		[
+			{"file":"motions/shouxing_Sprise.mtn"	,"fade_in":500,"fade_out":0}
+		]
+	}
+}

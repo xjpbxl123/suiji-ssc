@@ -1,0 +1,28 @@
+{
+    "type": "Live2D Model Setting",
+    "name": "momo",
+    "model": "momo.moc",
+    "textures": [
+        "momo.2048/texture_00.png"
+    ],
+    "motions": {
+        "tab_b": [
+            { "file": "motions/comeIn.mtn", "fade_in": 0, "fade_out": 0 },
+            { "file": "motions/wave.mtn" },
+            { "file": "motions/talk.mtn" },
+            { "file": "motions/jump.mtn" }
+        ],
+        "idle": [
+            { "file": "motions/idle2.mtn" }
+        ]
+    },
+    "textContent": {
+        "text": [
+            "hellow",
+            "hellow1",
+            "hellow2",
+            "hellow3"
+        ]
+    }
+
+}
