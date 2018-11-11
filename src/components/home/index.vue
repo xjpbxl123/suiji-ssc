@@ -160,15 +160,17 @@ export default {
     getComputed(val) {
       console.dir(val);
       let reArr = [];
-      let re;
+      let re1;
+      let re2;
       for (let i = 0; i < val.geshu; i++) {
         reArr.push(new Set(makeDadi(610)));
       }
-      re = new Set(
+      re1 = new Set(
         [...reArr[0]].filter(val => {
           return reArr[1].has(val) && reArr[2].has(val);
         })
       );
+      re2 = new Set();
       console.log("jahahah");
       console.log(re.size);
       console.log([...re]);
