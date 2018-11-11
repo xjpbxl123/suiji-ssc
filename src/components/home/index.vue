@@ -1,258 +1,197 @@
 <template>
-    <div id="divBox">
-        <div>
-            <button class="btn" ref="btns" @click='buttonClick1'>appear</button>
-            <button @click='buttonClick6'>buttonClick6</button>
-            <button @click='buttonClick2'>buttonClick2</button>
-            <button @click='buttonClick3'>buttonClick3</button>
-            <button @click='buttonClick4'>buttonClick4</button>
-            <button @click='buttonClick5'>buttonClick5</button>
-            <button @click='buttonClick7'>做动作</button>
-            <button @click='buttonClick8'>做表情</button>
-            <button @click='buttonClick9'>做pose</button>
-            <button @click='buttonClick10'>放大</button>
-            <button @click='buttonClick11'>buttonClick11</button>
-            <button @click='buttonClick12'>动画</button>
+    <div class="box">
+        <!-- <div class="boxm" @click="getCopy">copy</div>
+        <textarea ref="textarea" name="" id="" cols="30" rows="10">sucsesss</textarea> -->
 
-        </div>
-        <div class="bg"></div>
-        <!-- <canvas width="200" height="300" id="boxss"></canvas> -->
+       <div :style='val.bg' class="box-main" v-for="val,index in forData" :key="index">
+            <div>
+                <button @click="getCreate(index)">创建</button>
+               <div>
+                   <span>总组数</span>
+                    <input type="text" v-model="val.num"> 
+               </div>
+               <div>
+                   <span>大地注数</span>
+                    <input type="text" v-model="val.bottomNum"> 
+               </div>
+                <div>
+                   <span>大地个数</span>
+                    <input type="text" v-model="val.geshu"> 
+               </div>
+               <div>
+                   <span>容错</span>
+                    <input type="text" v-model="val.rongC.left"> 
+                    <span>--</span>
+                    <input type="text" v-model="val.rongC.right"> 
+               </div>
+            </div>
+            <div class="boxbottom"> 
+                <div v-for="val,indexs in val.createNum" :key="indexs">
+                    <div class="r-main">
+                        <textarea>
 
-        <!-- <div id="fix">
-            <div class="fix1"></div>
-            <div class="fix2"></div>
-        </div> -->
-        <!-- <canvas width="500" height="700" id="canvas"></canvas> -->
-        <!-- <blog-post>
-            <h1 slot="header">
-                About Me
-            </h1>
-
-            <p>Here's some page content, which will be included in vm.$slots.default, because it's not inside a named slot.</p>
-
-            <p slot="footer">
-                Copyright 2016 Evan You
-            </p>
-
-            <p>If I have some content down here, it will also be included in vm.$slots.default.</p>.
-        </blog-post> -->
+                        </textarea>
+                        <div class="r-main-right">
+                            <div>
+                                <span class="r-num">num</span>
+                                <span>{{indexs}}</span>
+                                <input type="checkbox">
+                                <span>复制</span>
+                            </div>
+                              <div class="result-div">
+                                <span>1</span>
+                                <span>1</span>
+                                <span>1</span>  
+                             </div>
+                           
+                        </div>
+                    </div>
+                  
+            </div>
+            </div>
+       </div>
     </div>
 </template>
 
-<style scoped lang="scss">
-    .bg {
-        width: 200px;
-        height: 200px;
-        background-color: rgba(255, 0, 223, 0.1);
-        opacity: 0.5;
-    }
-
-    #fix {
-        position: fixed;
-        left: 0;
-        top: 0;
-
-        .fix1 {
-            width: 100px;
-            height: 200px;
-            background: yellow;
-        }
-
-        .fix2 {
-            width: 200px;
-            height: 200px;
-            background: rgb(144, 193, 212);
-        }
-    }
-
-    canvas {
-        background: yellow;
-    }
-
-    #dibox {
-        width: 500px;
-        height: 600px;
-        background: yellow;
-    }
-
-    #canvas {
-        /* background: blue; */
-
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-
-    .foo {
-        color: red;
-    }
+<style scoped>
+.boxbottom {
+  margin-top: 50px;
+}
+.result-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 8px;
+}
+.boxbottom > div {
+  margin-bottom: 15px;
+}
+.box {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  min-height: 1000px;
+}
+input {
+  width: 50px;
+}
+.box-main {
+  flex: 1;
+}
+textarea {
+  width: 90px;
+  height: 70px;
+}
+.r-main {
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.r-main-right {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.r-num {
+  margin-right: 37px;
+}
 </style>
-
 <script>
-    import jquery from "jquery";
-    import Vue from "vue";
-    import { setTimeout } from "timers";
-    import vue from "vue";
-    // import FindLive2D from './live.js'
-    let mm = require("./live.js");
-    let p = require("./images/more.png");
-    let cx = {};
-    let obj = { a: "123", b: cx };
-    // let obj1 = {}
-
-    export default {
-        data() {
-            return {
-                can: 123,
-                canSon1: "",
-                canSon2: "",
-                domBox: "",
-                model: ""
-            };
+import { makeDadi } from "./index.js";
+export default {
+  data() {
+    return {
+      arrNum: [],
+      num: 50,
+      forData: [
+        {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
+          createNum: 0
         },
-        find: {
-            b() {}
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(111, 255, 11, 0.7)" },
+          createNum: 0
         },
-        methods: {
-            buttonClick6() {
-                //   this.$FindLive2d.disappear();
-                // this.$FindLive2d.addModel({
-                //     name: "haru",
-                //     configUrl: "/src/live2d/haru/haru.model.json"
-                // });
-                this.model.carryAnimationsEnd();
-                console.log(cx);
-            },
-            buttonClick1() {
-                this.model
-                    .carryAnimations([{
-                            startMotion: {
-                                name: "tab_b",
-                                id: 0
-                            }
-                        },
-                        {
-                            startMotion: {
-                                name: "tab_b",
-                                id: 1
-                            },
-                            textObj: {
-                                text: "hellow world",
-                                animation: true
-                            }
-                        },
-                        {
-                            startMotion: {
-                                name: "tab_b",
-                                id: 2,
-                                soundUrl: "sounds/01.wav"
-                            },
-                            textObj: "close"
-                        }
-                    ])
-                    .then(() => {
-                        console.log(1233333333);
-                    });
-            },
-            buttonClick2() {
-                //
-                //   this.can.canvas.width = 1000;
-                //   this.can.canvas.height = 1000;
-                //   this.can.animation({ width: 500, height: 500, time: "1s" }).then(() => {
-                //     this.canSon1.scale({ scale: 0.5 });
-                //   });
-                //   this.can.init({ init: true, cWidth: 500, height: 500 });
-                //   this.$router.push({ path: "/login" });
-                // this.model.startMotion({ name: 'tab_b', id: 1 }).then(() => {
-
-                // })
-                this.model.mouseSpeakMotion({
-                    text: '',
-                    motion: {
-                        name: "tab_b",
-                        id: 2,
-                        soundUrl: "sounds/01.wav",
-                        newMotion: true
-                    }
-                });
-
-                //   this.$FindLive2d.appear();
-            },
-            buttonClick3() {
-                console.log(this.$FindLive2d.getAllModel());
-                this.$FindLive2d.setPosition({ name: "haru", position: 1 });
-            },
-            buttonClick4() {
-                this.$FindLive2d.setPosition({ name: "good", position: 1 });
-            },
-            buttonClick5() {
-                // this.can.move({ x: 400, y: 500, time: "1s" }).then(data => {});
-                this.can.addModel({
-                    name: "aa",
-                    configUrl: "/src/live2d/haru/haru_01.model.json"
-                });
-            },
-            buttonClick7() {
-                this.canSon1.startMotion({ name: "tap_body", id: 2 });
-            },
-            buttonClick8() {
-                this.canSon1.startExpress({ name: "f05" });
-            },
-            buttonClick9() {
-                this.canSon1.startPose({ pose: "haru.pose.json" });
-            },
-            buttonClick10() {
-                this.canSon1.scale({ scale: 1.5 });
-            },
-            buttonClick11() {
-                this.canSon1
-                    .replacePart({
-                        picArr: [
-                            "haru_02.1024/texture_00.png",
-                            "haru_02.1024/texture_01.png",
-                            "haru_02.1024/texture_02.png"
-                        ]
-                    })
-                    .then(() => {
-                        alert(111);
-                    });
-            },
-            buttonClick12() {
-                this.canSon1
-                    .mouseSpeak({
-                        soundUrl: "sounds/tapBody_00.mp3",
-                        startExpress: "f05",
-                        mouseSpeed: 2
-                    })
-                    .then(() => {
-                        // alert(1);
-                    });
-            }
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(255, 255, 11, 0.7)" },
+          createNum: 0
         },
-        mounted() {
-            let obj = [{}, {}, {}];
-            obj.forEach((val, index) => {
-                delete obj[index];
-            });
-            console.log(obj.push(123));
-            console.log(obj.length, 11111);
-            console.log("-------===");
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(15, 99, 11, 0.7)" },
+          createNum: 0
         },
-        created() {
-            this.$nextTick(() => {
-                this.model = this.$FindLive2d.addModel({ name: "good", configUrl: "/src/live2d/momo/momo.model.json" },
-                    model => {
-                        this.$FindLive2d
-                            .appear({
-                                startX: 400,
-                                startY: -300,
-                                animation: true,
-                                startOpacity: 0
-                            })
-                            .then(data => {});
-                    }
-                );
-            });
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(15, 199, 77, 0.7)" },
+          createNum: 0
         }
+      ]
     };
+  },
+  methods: {
+    getCopy() {
+      this.$refs.textarea.select();
+      console.log(this.$refs.textarea);
+      document.execCommand("Copy"); // 执行浏览器复制命令
+    },
+    getComputed(val) {
+      console.dir(val);
+      let reArr = [];
+      let re;
+      for (let i = 0; i < val.geshu; i++) {
+        reArr.push(new Set(makeDadi(610)));
+      }
+      re = new Set(
+        [...reArr[0]].filter(val => {
+          return reArr[1].has(val) && reArr[2].has(val);
+        })
+      );
+      console.log("jahahah");
+      console.log(re.size);
+      console.log([...re]);
+    },
+    getCreate(index) {
+      this.getComputed(this.forData[index]);
+      //   this.$set(
+      //     this.forData[index],
+      //     "createNum",
+      //     parseInt(this.forData[index].num)
+      //   );
+    },
+    resetArr() {
+      let num = 0;
+      let result;
+      this.arrNum = Array.from({ length: 1000 }, () => {
+        result = num.toString().padStart(3, "00");
+        num++;
+        return result;
+      });
+    }
+  },
+  created() {},
+  components: {}
+};
 </script>

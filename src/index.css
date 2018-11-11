@@ -6,6 +6,9 @@ body {
 .live2dTextAnimationClass_ttxs {
     animation: shake 50s ease-in-out infinite;
 }
+.boxm{
+    height: 200px;
+}
 
 @keyframes shake {
     2% {

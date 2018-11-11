@@ -1,1 +1,0 @@
-export default { a: "index2.js" }
