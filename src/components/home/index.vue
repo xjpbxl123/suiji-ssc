@@ -3,8 +3,6 @@
     <!-- <div class="boxm" @click="getCopy">copy</div>
     <textarea ref="textarea" name="" id="" cols="30" rows="10">sucsesss</textarea>-->
     <div @click="getSend">链接服务-------链接服务</div>
-    <div @click="getIs">链接服务-------链接服务</div>
-    <div @click="getIs">链接服务-------链接服务</div>
     <div class="box-row">
       <div :style="val.bg" class="box-main" v-for="val,index in forData" :key="index">
         <div>
@@ -27,6 +25,28 @@
             <span>--</span>
             <input type="text" v-model="val.rongC.right">
           </div>
+          <div class="isAllright">
+            <span>全对</span>
+            <textarea ref="allRight" v-model="val.rightIndex">{{getIsAll(val.isRight,index)}}</textarea>
+            <button @click="getReset(val.isRight,index)" class="reset">reset</button>
+            <button @click="getCopyallRight(index)" class="getCopyallRight">复制</button>
+          </div>
+          <div>
+            <button @click="getResult(index)" class="startB">容错</button>
+            <input type="text" value="1">
+            <span>--</span>
+            <input type="text" value="8">
+          </div>
+          <div>
+            <div>容错对应的索引</div>
+            <textarea v-model="successRong[index]" class="result-tt">111111</textarea>
+          </div>
+          <div class="success-re">
+            <div>结果</div>
+            <textarea v-model="resultEnd[index].join(' ')" ref="numResult" class="result-t"></textarea>
+            <span>{{resultEnd[index].length}}</span>
+            <button @click="getResultCopy(index)">复制</button>
+          </div>
         </div>
         <div class="boxbottom">
           <div v-for="vals,indexs in val.createNum" :key="indexs">
@@ -34,13 +54,13 @@
               <textarea>{{vals.join(' ')}}</textarea>
               <div class="r-main-right">
                 <div>
-                  <span class="r-num">num</span>
+                  <span class="r-num">{{vals.length}}</span>
                   <input type="checkbox" class="checkbox">
                   <span>{{indexs}}</span>
                   <!-- <span>复制</span> -->
                 </div>
                 <div class="result-div">
-                  <!-- <span v-for="valss,indexss in val.isRight">{{val}}</span> -->
+                  <span v-for="valss,indexss in val.isRight[indexs]">{{valss}}</span>
                 </div>
               </div>
             </div>
@@ -52,6 +72,24 @@
 </template>
 
 <style scoped>
+.success-re {
+  display: flex;
+  align-items: center;
+}
+.result-t {
+  width: 50px;
+  margin-right: 50px;
+}
+.result-tt {
+  width: 200px;
+}
+.startB {
+  background: yellow;
+}
+.isAllright {
+  display: flex;
+  align-items: center;
+}
 .box {
   display: flex;
   flex-direction: column !important;
@@ -105,20 +143,26 @@ textarea {
 }
 .r-num {
   margin-right: 37px;
+  font-size: 12px;
 }
 .checkbox {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
 }
 </style>
 <script>
 import { makeDadi, ARRNUM } from "./index.js";
+import { setTimeout } from "timers";
 
 export default {
   data() {
     return {
+      markCreate: [],
       arrNum: [],
-      sanxingResult: undefined,
+      sanxingResult: false,
+      allRight: [],
+      successRong: [1, "", "", "", ""],
+      resultEnd: [[], [], [], [], []],
       forData: [
         {
           num: 50,
@@ -127,7 +171,8 @@ export default {
           rongC: { left: 1, right: 2 },
           bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
           createNum: [],
-          isRight: []
+          isRight: [],
+          rightIndex: ""
         },
         {
           num: 50,
@@ -136,7 +181,8 @@ export default {
           rongC: { left: 1, right: 2 },
           bg: { backgroundColor: "rgba(111, 255, 11, 0.7)" },
           createNum: [],
-          isRight: []
+          isRight: [],
+          rightIndex: ""
         },
         {
           num: 50,
@@ -145,7 +191,8 @@ export default {
           rongC: { left: 1, right: 2 },
           bg: { backgroundColor: "rgba(255, 255, 11, 0.7)" },
           createNum: [],
-          isRight: []
+          isRight: [],
+          rightIndex: ""
         },
         {
           num: 50,
@@ -154,7 +201,8 @@ export default {
           rongC: { left: 1, right: 2 },
           bg: { backgroundColor: "rgba(15, 99, 11, 0.7)" },
           createNum: [],
-          isRight: []
+          isRight: [],
+          rightIndex: ""
         },
         {
           num: 50,
@@ -163,40 +211,90 @@ export default {
           rongC: { left: 1, right: 2 },
           bg: { backgroundColor: "rgba(15, 199, 77, 0.7)" },
           createNum: [],
-          isRight: []
+          isRight: [],
+          rightIndex: ""
         }
       ]
     };
   },
   methods: {
-    getIs() {
-      this.getserverData({ result: "78789" });
+    getIsAll(isRightArr, i_index) {
+      let arr = [];
+      if (!(isRightArr.length && isRightArr[0].length > 1)) {
+        return;
+      }
+      isRightArr.forEach((val, index) => {
+        let r = val.every((vals, indexs) => {
+          if (vals === "错") {
+            return false;
+          } else {
+            return true;
+          }
+        });
+        if (r) {
+          arr.push(index);
+        }
+      });
+      this.$set(this.forData[i_index], "rightIndex", arr.join(","));
+    },
+    getReset(getIsAll, i_index) {
+      this.getIsAll(getIsAll, i_index);
+    },
+    getResult(index) {
+      let r = this.successRong[index].replace(/\s/g, "").split(",");
+      this.makeResult(r, index);
+    },
+    makeResult(resultArr, i_index) {
+      let params = this.forData[i_index].createNum;
+      let re = ARRNUM.filter(valNum => {
+        return resultArr.some(val_index => {
+          return !params[val_index].includes(valNum);
+        });
+      });
+      this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
       this.sanxingResult = data.result.substring(2);
-      console.log(this.sanxingResult);
-      console.log(this.sanxingResult);
       this.forData.forEach((val, index) => {
         val.createNum.forEach((vals, indexs) => {
-          let r = vals.join(" ").indexOf(this.sanxingResult);
-          if (r !== -1) {
+          let r = vals.includes(this.sanxingResult);
+          if (r) {
             val.isRight[indexs].push("对");
           } else {
-            val.isRight[indexs].push("对");
+            val.isRight[indexs].push("错");
           }
         });
       });
+
+      this.markCreate.forEach((valx, index_x) => {
+        this.getAgain(parseInt(valx));
+      });
+    },
+    getAgain(index) {
+      let params = this.forData[index];
+
+      let resultArr = Array.from({ length: parseInt(params.num) }, () => {
+        return this.getComputed(params);
+      });
+      this.$set(params, "createNum", resultArr);
     },
     getSend() {
       this.$socket.send("pianoClassroom.getonline", { a: 12 });
     },
     getCopy() {
       this.$refs.textarea.select();
-      console.log(this.$refs.textarea);
+      console.log(this.$refs.textarea.select);
       document.execCommand("Copy"); // 执行浏览器复制命令
     },
+    getCopyallRight(index) {
+      this.$refs.allRight[index].select();
+      document.execCommand("Copy");
+    },
+    getResultCopy(index) {
+      this.$refs.numResult[index].select();
+      document.execCommand("Copy");
+    },
     getComputed(val) {
-      console.dir(val);
       let reArr = [];
       let re1;
       let re2;
@@ -204,7 +302,6 @@ export default {
       for (let i = 0; i < val.geshu; i++) {
         reArr.push(new Set(makeDadi(610)));
       }
-      console.log([...reArr[0]]);
       re1 = [...reArr[0]].filter(val => {
         return reArr[1].has(val) && reArr[2].has(val);
       });
@@ -220,11 +317,15 @@ export default {
       return result;
     },
     getCreate(index) {
+      this.markCreate.push(index);
+      this.markCreate = [...new Set(this.markCreate)];
+      console.log(this.markCreate);
       let params = this.forData[index];
-      let resultArr = Array.from({ length: 50 }, () => {
+
+      let resultArr = Array.from({ length: parseInt(params.num) }, () => {
         return this.getComputed(params);
       });
-      let isR = Array.from({ length: 50 }, () => {
+      let isR = Array.from({ length: parseInt(params.num) }, () => {
         return [];
       });
       this.$set(params, "isRight", isR);
