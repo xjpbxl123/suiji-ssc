@@ -2,6 +2,9 @@
   <div class="box">
     <!-- <div class="boxm" @click="getCopy">copy</div>
     <textarea ref="textarea" name="" id="" cols="30" rows="10">sucsesss</textarea>-->
+    <div>
+      <button @click="getStart" class="startll">startll</button>
+    </div>
     <div @click="getSend">链接服务-------链接服务</div>
     <div class="box-row">
       <div :style="val.bg" class="box-main" v-for="val,index in forData" :key="index">
@@ -75,6 +78,11 @@
 .success-re {
   display: flex;
   align-items: center;
+}
+.startll {
+  width: 50px;
+  height: 50px;
+  background: pink;
 }
 .result-t {
   width: 50px;
@@ -152,16 +160,17 @@ textarea {
 </style>
 <script>
 import { makeDadi, ARRNUM } from "./index.js";
-import { setTimeout } from "timers";
+import { setTimeout, clearTimeout } from "timers";
 
 export default {
   data() {
     return {
+      onlineCount: 0,
       markCreate: [],
       arrNum: [],
       sanxingResult: false,
       allRight: [],
-      successRong: [1, "", "", "", ""],
+      successRong: ["", "", "", "", ""],
       resultEnd: [[], [], [], [], []],
       forData: [
         {
@@ -244,6 +253,10 @@ export default {
       let r = this.successRong[index].replace(/\s/g, "").split(",");
       this.makeResult(r, index);
     },
+    getResultsRight(index) {
+      let r = this.forData[index].rightIndex.replace(/\s/g, "").split(",");
+      this.makeResult(r, index);
+    },
     makeResult(resultArr, i_index) {
       let params = this.forData[i_index].createNum;
       let re = ARRNUM.filter(valNum => {
@@ -254,6 +267,7 @@ export default {
       this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
+      this.onlineCount++;
       this.sanxingResult = data.result.substring(2);
       this.forData.forEach((val, index) => {
         val.createNum.forEach((vals, indexs) => {
@@ -269,6 +283,14 @@ export default {
       this.markCreate.forEach((valx, index_x) => {
         this.getAgain(parseInt(valx));
       });
+      if (this.onlineCount >= 3) {
+        let timeid = setTimeout(() => {
+          clearTimeout(timeid);
+          this.markCreate.forEach((valx, index_x) => {
+            this.getResultsRight(parseInt(valx));
+          });
+        }, 2000);
+      }
     },
     getAgain(index) {
       let params = this.forData[index];
@@ -338,6 +360,11 @@ export default {
         result = num.toString().padStart(3, "00");
         num++;
         return result;
+      });
+    },
+    getStart() {
+      Array.from({ length: 5 }, (val, index) => {
+        this.getCreate(index);
       });
     }
   },
