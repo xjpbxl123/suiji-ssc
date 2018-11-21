@@ -1,17 +1,18 @@
 <template>
-  <div class="box">
+  <div class="boxs">
     <!-- <div class="boxm" @click="getCopy">copy</div>
     <textarea ref="textarea" name="" id="" cols="30" rows="10">sucsesss</textarea>-->
-    <div>
+    <div class="box-one">
       <button @click="getStart" class="startll">startll</button>
       <button>{{this.sanxingResult}}</button>
+      <button>{{this.onlineCount}}</button>
     </div>
-    <div @click="getSend">链接服务-------链接服务</div>
+    <div class="link-on" @click="getSend">链接服务-------链接服务</div>
     <div class="box-row">
       <div :style="val.bg" class="box-main" v-for="val,index in forData" :key="index">
         <div>
-          <button @click="getCreate(index)">创建</button>
-          <div>
+          <!-- <button @click="getCreate(index)">创建</button> -->
+          <!-- <div>
             <span>总组数</span>
             <input type="text" v-model="val.num">
           </div>
@@ -22,17 +23,17 @@
           <div>
             <span>大地个数</span>
             <input type="text" v-model="val.geshu">
-          </div>
-          <div>
+          </div>-->
+          <!-- <div>
             <span>容错</span>
             <input type="text" v-model="val.rongC.left">
-            <span>--</span>
+            <span>-</span>
             <input type="text" v-model="val.rongC.right">
-          </div>
+          </div>-->
           <div class="isAllright">
             <span>全对</span>
-            <textarea ref="allRight" v-model="val.rightIndex">{{getIsAll(val.isRight,index)}}</textarea>
-            <button @click="getReset(val.isRight,index)" class="reset">reset</button>
+            <textarea class="allRight-t" ref="allRight" v-model="val.rightIndex">{{getIsAll(val.isRight,index)}}</textarea>
+            <!-- <button @click="getReset(val.isRight,index)" class="reset">reset</button> -->
             <button @click="getCopyallRight(index)" class="getCopyallRight">复制</button>
           </div>
           <div>
@@ -49,25 +50,11 @@
             <div>结果</div>
             <textarea v-model="resultEnd[index].join(' ')" ref="numResult" class="result-t"></textarea>
             <span>{{resultEnd[index].length}}</span>
-            <button @click="getResultCopy(index)">复制</button>
-          </div>
-        </div>
-        <div class="boxbottom">
-          <div v-for="vals,indexs in val.createNum" :key="indexs">
-            <div class="r-main">
-              <textarea>{{vals.join(' ')}}</textarea>
-              <div class="r-main-right">
-                <div>
-                  <span class="r-num">{{vals.length}}</span>
-                  <input type="checkbox" class="checkbox">
-                  <span>{{indexs}}</span>
-                  <!-- <span>复制</span> -->
-                </div>
-                <div class="result-div">
-                  <span v-for="valss,indexss in val.isRight[indexs]">{{valss}}</span>
-                </div>
-              </div>
-            </div>
+            <button
+              class="res_s"
+              :class="{isRed:val.red,isBlack:val.black}"
+              @click="getResultCopy(index)"
+            >复制</button>
           </div>
         </div>
       </div>
@@ -76,9 +63,31 @@
 </template>
 
 <style scoped>
+.res_s {
+  background: blue;
+}
+.isBlack {
+  background: black !important;
+}
+.allRight-t {
+  width: 30px;
+  height: 30px;
+}
+.link-on {
+  background: #ccc;
+  height: 30px;
+}
+.box-one {
+  width: 100%;
+  background: blue;
+  margin-bottom: 10px;
+}
 .success-re {
   display: flex;
   align-items: center;
+}
+.isRed {
+  background: red !important;
 }
 .startll {
   width: 50px;
@@ -87,25 +96,23 @@
 }
 .result-t {
   width: 50px;
-  margin-right: 50px;
+  margin-right: 37px;
 }
 .result-tt {
-  width: 200px;
+  width: 195px;
 }
 .startB {
-  background: yellow;
+  background: rgba(78, 79, 33, 1);
 }
 .isAllright {
   display: flex;
   align-items: center;
 }
-.box {
-  display: flex;
-  flex-direction: column !important;
-}
+
 .box-row {
   display: flex;
   flex-direction: row !important;
+  flex-wrap: wrap;
 }
 .boxbottom {
   margin-top: 50px;
@@ -131,11 +138,16 @@ input {
   width: 50px;
 }
 .box-main {
-  flex: 1;
+  width: 197px;
+  margin-bottom: 10px;
+  margin-right: 7px;
+  /* flex: 1; */
 }
 textarea {
   width: 90px;
   height: 70px;
+  padding: 0;
+  margin: 0;
 }
 .r-main {
   height: 70px;
@@ -171,8 +183,54 @@ export default {
       arrNum: [],
       sanxingResult: false,
       allRight: [],
-      successRong: ["", "", "", "", ""],
-      resultEnd: [[], [], [], [], []],
+      successRong: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      resultEnd: [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      jujeZhu: [],
+      rightIndex: [],
       forData: [
         {
           num: 50,
@@ -223,16 +281,223 @@ export default {
           createNum: [],
           isRight: [],
           rightIndex: ""
+        },
+
+        {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(232, 25, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(20, 77, 88, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(111, 255, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(255, 255, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(15, 99, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(15, 199, 77, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+
+        {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(232, 25, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(20, 77, 88, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(111, 255, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(255, 255, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(15, 99, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(15, 199, 77, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+
+        {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(232, 25, 11, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        },
+        {
+          num: 50,
+          geshu: 3,
+          bottomNum: 610,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(20, 77, 88, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
         }
       ]
     };
   },
+  watch: {
+    onlineCount(val) {
+      if (val === 5) {
+        this.readyResult();
+      }
+      if (val === 6) {
+        this.readyResult();
+        this.isRedBlack();
+      }
+      if (val === 7) {
+        this.isRedBlack();
+      }
+    }
+  },
   methods: {
+    isRedBlack() {
+      let r;
+      let t = setTimeout(() => {
+        clearTimeout(t);
+        this.rightIndex.forEach((val, index) => {
+          console.log(this.rightIndex);
+          r = this.jujeZhu[index] / 1 - this.resultEnd[index].length;
+          if (val === this.forData[index].rightIndex) {
+            this.$set(this.forData[index], "red", true);
+            return;
+          }
+          if (Math.abs(r) <= 19) {
+            this.$set(this.forData[index], "black", true);
+            return;
+          }
+          this.$set(this.forData[index], "red", false);
+          this.$set(this.forData[index], "black", false);
+        });
+      }, 5000);
+    },
+    readyResult() {
+      let t = setTimeout(() => {
+        // this.jujeZhu = this.resultEnd;
+        clearTimeout(t);
+        this.forData.forEach((val, index) => {
+          this.jujeZhu[index] = this.resultEnd[index].length;
+          this.rightIndex.splice(index, 1, val.rightIndex);
+        });
+      }, 20000);
+    },
     getIsAll(isRightArr, i_index) {
-      let arr = [];
       if (!(isRightArr.length && isRightArr[0].length > 1)) {
         return;
       }
+      let arr = [];
       isRightArr.forEach((val, index) => {
         let r = val.every((vals, indexs) => {
           if (vals === "错") {
@@ -245,6 +510,8 @@ export default {
           arr.push(index);
         }
       });
+
+      // this.rightIndex.splice(i_index, 1, arr.join(","));
       this.$set(this.forData[i_index], "rightIndex", arr.join(","));
     },
     getReset(getIsAll, i_index) {
@@ -265,6 +532,8 @@ export default {
           return !params[val_index].includes(valNum);
         });
       });
+
+      // this.jujeZhu.splice(i_index, 1, re);
       this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
@@ -285,7 +554,7 @@ export default {
       this.markCreate.forEach((valx, index_x) => {
         this.getAgain(parseInt(valx));
       });
-      if (this.onlineCount >= 3) {
+      if (this.onlineCount >= 2) {
         let timeid = setTimeout(() => {
           clearTimeout(timeid);
           this.markCreate.forEach((valx, index_x) => {
@@ -365,7 +634,7 @@ export default {
       });
     },
     getStart() {
-      Array.from({ length: 5 }, (val, index) => {
+      Array.from({ length: 21 }, (val, index) => {
         this.getCreate(index);
       });
     }
