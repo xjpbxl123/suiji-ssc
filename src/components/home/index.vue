@@ -4,6 +4,7 @@
     <textarea ref="textarea" name="" id="" cols="30" rows="10">sucsesss</textarea>-->
     <div>
       <button @click="getStart" class="startll">startll</button>
+      <button>{{this.sanxingResult}}</button>
     </div>
     <div @click="getSend">链接服务-------链接服务</div>
     <div class="box-row">
@@ -268,7 +269,8 @@ export default {
     },
     getserverData(data) {
       this.onlineCount++;
-      this.sanxingResult = data.result.substring(2);
+      this.sanxingResult = data.result.substring(0, 3);
+
       this.forData.forEach((val, index) => {
         val.createNum.forEach((vals, indexs) => {
           let r = vals.includes(this.sanxingResult);
