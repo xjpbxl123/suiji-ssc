@@ -32,7 +32,7 @@
           </div>-->
           <div class="isAllright">
             <span>全对</span>
-            <textarea class="allRight-t" ref="allRight" v-model="val.rightIndex">{{getIsAll(val.isRight,index)}}</textarea>
+            <textarea class="allRight-t" ref="allRight" v-model="val.rightIndex"></textarea>
             <!-- <button @click="getReset(val.isRight,index)" class="reset">reset</button> -->
             <button @click="getCopyallRight(index)" class="getCopyallRight">复制</button>
           </div>
@@ -178,6 +178,7 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
+      arrs: [{ x: 1 }, { y: 2 }],
       onlineCount: 0,
       markCreate: [],
       arrNum: [],
@@ -454,15 +455,20 @@ export default {
         this.readyResult();
       }
       if (val === 6) {
-        this.readyResult();
-        this.isRedBlack();
+        // this.readyResult();
       }
-      if (val === 7) {
-        this.isRedBlack();
-      }
+      // if (val === 7) {
+      //   this.isRedBlack();
+      // }
     }
   },
   methods: {
+    goto() {
+      let a = this.arrs;
+      a.splice(0, 1);
+      console.log(a);
+      console.log(this.arrs);
+    },
     isRedBlack() {
       let r;
       let t = setTimeout(() => {
@@ -481,7 +487,7 @@ export default {
           this.$set(this.forData[index], "red", false);
           this.$set(this.forData[index], "black", false);
         });
-      }, 5000);
+      }, 1000);
     },
     readyResult() {
       let t = setTimeout(() => {
@@ -491,12 +497,9 @@ export default {
           this.jujeZhu[index] = this.resultEnd[index].length;
           this.rightIndex.splice(index, 1, val.rightIndex);
         });
-      }, 20000);
+      }, 30000);
     },
     getIsAll(isRightArr, i_index) {
-      if (!(isRightArr.length && isRightArr[0].length > 1)) {
-        return;
-      }
       let arr = [];
       isRightArr.forEach((val, index) => {
         let r = val.every((vals, indexs) => {
@@ -510,8 +513,6 @@ export default {
           arr.push(index);
         }
       });
-
-      // this.rightIndex.splice(i_index, 1, arr.join(","));
       this.$set(this.forData[i_index], "rightIndex", arr.join(","));
     },
     getReset(getIsAll, i_index) {
@@ -537,9 +538,7 @@ export default {
       this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
-      this.onlineCount++;
-      this.sanxingResult = data.result.substring(0, 3);
-
+      this.sanxingResult = data.result.substring(1, 4);
       this.forData.forEach((val, index) => {
         val.createNum.forEach((vals, indexs) => {
           let r = vals.includes(this.sanxingResult);
@@ -550,17 +549,25 @@ export default {
           }
         });
       });
-
+      if (this.forData[0].isRight[0].length > 4) {
+        this.forData.forEach((val, index) => {
+          this.getIsAll(val.isRight, index);
+        });
+      }
       this.markCreate.forEach((valx, index_x) => {
         this.getAgain(parseInt(valx));
       });
-      if (this.onlineCount >= 2) {
+      this.onlineCount++;
+      if (this.onlineCount >= 5) {
         let timeid = setTimeout(() => {
           clearTimeout(timeid);
           this.markCreate.forEach((valx, index_x) => {
             this.getResultsRight(parseInt(valx));
           });
-        }, 2000);
+          if (this.onlineCount === 6) {
+            this.isRedBlack();
+          }
+        }, 1000);
       }
     },
     getAgain(index) {
