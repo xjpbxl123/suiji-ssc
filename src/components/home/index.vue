@@ -455,11 +455,11 @@ export default {
         this.readyResult();
       }
       if (val === 6) {
-        // this.readyResult();
+        this.readyResult();
       }
-      // if (val === 7) {
-      //   this.isRedBlack();
-      // }
+      if (val === 7) {
+        this.isRedBlack();
+      }
     }
   },
   methods: {

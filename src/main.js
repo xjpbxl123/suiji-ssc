@@ -9,7 +9,7 @@ import VueResource from 'vue-resource'
 
 vue.use(VueResource)
 vue.use(vueRouter)
-let socket = new Socket("ws://192.168.0.106:3201")
+let socket = new Socket("ws://192.168.0.101:3201")
 vue.prototype.$socket = socket
 
 socket.createSocket()
