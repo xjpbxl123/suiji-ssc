@@ -6,6 +6,9 @@
       <button @click="getStart" class="startll">startll</button>
       <button>{{this.sanxingResult}}</button>
       <button>{{this.onlineCount}}</button>
+      <input class="CQresult" v-model="CQresult" type="text">
+      <button @click="startCQresult">computed</button>
+      <button class="bbbttt" v-text="ifok"></button>
     </div>
     <div class="link-on" @click="getSend">链接服务-------链接服务</div>
     <div class="box-row">
@@ -63,6 +66,13 @@
 </template>
 
 <style scoped>
+.bbbttt {
+  margin-left: 100px;
+}
+.CQresult {
+  width: 100px;
+  margin-left: 100px;
+}
 .res_s {
   background: blue;
 }
@@ -178,60 +188,18 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
+      CQresult: "12345",
       arrs: [{ x: 1 }, { y: 2 }],
       onlineCount: 0,
       markCreate: [],
       arrNum: [],
       sanxingResult: false,
       allRight: [],
-      successRong: [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      resultEnd: [
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-      ],
+      successRong: [],
+      resultEnd: [],
       jujeZhu: [],
       rightIndex: [],
+      ifok: "ready",
       forData: [
         {
           num: 50,
@@ -457,12 +425,13 @@ export default {
       if (val === 6) {
         this.readyResult();
       }
-      if (val === 7) {
-        this.isRedBlack();
-      }
     }
   },
   methods: {
+    startCQresult() {
+      this.ifok = "rea111dy";
+      this.getserverData(this.CQresult);
+    },
     goto() {
       let a = this.arrs;
       a.splice(0, 1);
@@ -477,15 +446,21 @@ export default {
           console.log(this.rightIndex);
           r = this.jujeZhu[index] / 1 - this.resultEnd[index].length;
           if (val === this.forData[index].rightIndex) {
-            this.$set(this.forData[index], "red", true);
+            if (this.forData[index].red === true) {
+              this.$set(this.forData[index], "red", false);
+              this.$set(this.forData[index], "black", true);
+            } else {
+              this.$set(this.forData[index], "red", true);
+            }
             return;
           }
-          if (Math.abs(r) <= 19) {
-            this.$set(this.forData[index], "black", true);
-            return;
-          }
+          // if (Math.abs(r) <= 19) {
+          //   this.$set(this.forData[index], "black", true);
+          //   return;
+          // }
           this.$set(this.forData[index], "red", false);
           this.$set(this.forData[index], "black", false);
+          // this.$set(this.forData[index], "black", false);
         });
       }, 1000);
     },
@@ -497,7 +472,8 @@ export default {
           this.jujeZhu[index] = this.resultEnd[index].length;
           this.rightIndex.splice(index, 1, val.rightIndex);
         });
-      }, 30000);
+        this.ifok = "copyResult-ok";
+      }, 20000);
     },
     getIsAll(isRightArr, i_index) {
       let arr = [];
@@ -538,7 +514,7 @@ export default {
       this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
-      this.sanxingResult = data.result.substring(1, 4);
+      this.sanxingResult = data.substring(1, 4);
       this.forData.forEach((val, index) => {
         val.createNum.forEach((vals, indexs) => {
           let r = vals.includes(this.sanxingResult);
@@ -558,15 +534,17 @@ export default {
         this.getAgain(parseInt(valx));
       });
       this.onlineCount++;
+      this.ifok = "count-Ok";
       if (this.onlineCount >= 5) {
         let timeid = setTimeout(() => {
           clearTimeout(timeid);
           this.markCreate.forEach((valx, index_x) => {
             this.getResultsRight(parseInt(valx));
           });
-          if (this.onlineCount === 6) {
+          if (this.onlineCount === 6 || this.onlineCount === 7) {
             this.isRedBlack();
           }
+          this.ifok = "isRed-Ok";
         }, 1000);
       }
     },
@@ -579,7 +557,7 @@ export default {
       this.$set(params, "createNum", resultArr);
     },
     getSend() {
-      this.$socket.send("pianoClassroom.getonline", { a: 12 });
+      // this.$socket.send("pianoClassroom.getonline", { a: 12 });
     },
     getCopy() {
       this.$refs.textarea.select();
@@ -644,12 +622,33 @@ export default {
       Array.from({ length: 21 }, (val, index) => {
         this.getCreate(index);
       });
+    },
+    ResetData() {
+      this.forData = Array.from({ length: 21 }, (val, index) => {
+        return {
+          num: 50,
+          bottomNum: 610,
+          geshu: 3,
+          rongC: { left: 1, right: 2 },
+          bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
+          createNum: [],
+          isRight: [],
+          rightIndex: ""
+        };
+      });
+      this.successRong = Array.from({ length: 21 }, () => {
+        return "";
+      });
+      this.resultEnd = Array.from({ length: 21 }, () => {
+        return [];
+      });
     }
   },
   created() {
-    this.$socket.eventOnByVue({
-      "pianoClassroom.getonline": this.getserverData
-    });
+    this.ResetData();
+    // this.$socket.eventOnByVue({
+    //   "pianoClassroom.getonline": this.getserverData
+    // });
   },
   components: {}
 };
