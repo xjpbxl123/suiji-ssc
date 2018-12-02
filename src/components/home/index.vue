@@ -77,7 +77,7 @@
   background: blue;
 }
 .isBlack {
-  background: black !important;
+  background: yellow !important;
 }
 .allRight-t {
   width: 30px;
