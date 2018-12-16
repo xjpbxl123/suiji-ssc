@@ -429,8 +429,11 @@ export default {
   },
   methods: {
     startCQresult() {
-      this.ifok = "rea111dy";
-      this.getserverData(this.CQresult);
+      let arrs = this.CQresult.split(" ");
+      arrs.forEach((val, index) => {
+        this.ifok = "rea111dy";
+        this.getserverData(val);
+      });
     },
     goto() {
       let a = this.arrs;
@@ -443,9 +446,11 @@ export default {
       let t = setTimeout(() => {
         clearTimeout(t);
         this.rightIndex.forEach((val, index) => {
-          console.log(this.rightIndex);
           r = this.jujeZhu[index] / 1 - this.resultEnd[index].length;
           if (val === this.forData[index].rightIndex) {
+            console.log("log--===");
+            console.log(val);
+            console.log(this.forData[index].rightIndex);
             if (this.forData[index].red === true) {
               this.$set(this.forData[index], "red", false);
               this.$set(this.forData[index], "black", true);
@@ -514,7 +519,8 @@ export default {
       this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
-      this.sanxingResult = data.substring(1, 4);
+      // this.sanxingResult = data.substring(1, 4);
+      this.sanxingResult = data;
       this.forData.forEach((val, index) => {
         val.createNum.forEach((vals, indexs) => {
           let r = vals.includes(this.sanxingResult);
@@ -526,6 +532,8 @@ export default {
         });
       });
       if (this.forData[0].isRight[0].length > 4) {
+        console.log("succccc--");
+        console.dir(this.forData);
         this.forData.forEach((val, index) => {
           this.getIsAll(val.isRight, index);
         });
@@ -597,7 +605,7 @@ export default {
     getCreate(index) {
       this.markCreate.push(index);
       this.markCreate = [...new Set(this.markCreate)];
-      console.log(this.markCreate);
+      // console.log(this.markCreate);
       let params = this.forData[index];
 
       let resultArr = Array.from({ length: parseInt(params.num) }, () => {
@@ -624,28 +632,37 @@ export default {
       });
     },
     ResetData() {
-      this.forData = Array.from({ length: 21 }, (val, index) => {
-        return {
-          num: 50,
-          bottomNum: 610,
-          geshu: 3,
-          rongC: { left: 1, right: 2 },
-          bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
-          createNum: [],
-          isRight: [],
-          rightIndex: ""
-        };
-      });
-      this.successRong = Array.from({ length: 21 }, () => {
-        return "";
-      });
-      this.resultEnd = Array.from({ length: 21 }, () => {
-        return [];
+      return new Promise(resolve => {
+        this.forData = Array.from({ length: 21 }, (val, index) => {
+          return {
+            num: 50,
+            bottomNum: 610,
+            geshu: 3,
+            rongC: { left: 1, right: 2 },
+            bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
+            createNum: [],
+            isRight: [],
+            rightIndex: ""
+          };
+        });
+        this.successRong = Array.from({ length: 21 }, () => {
+          return "";
+        });
+        this.resultEnd = Array.from({ length: 21 }, () => {
+          return [];
+        });
+        let id = setTimeout(() => {
+          clearTimeout(id);
+          resolve();
+        }, 300);
       });
     }
   },
   created() {
-    this.ResetData();
+    this.ResetData().then(() => {
+      this.getStart();
+      this.ifok = "第一次随机ok";
+    });
     // this.$socket.eventOnByVue({
     //   "pianoClassroom.getonline": this.getserverData
     // });
