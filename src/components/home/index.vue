@@ -419,12 +419,12 @@ export default {
   },
   watch: {
     onlineCount(val) {
-      if (val === 5) {
-        this.readyResult();
-      }
-      if (val === 6) {
-        this.readyResult();
-      }
+      // if (val === 5) {
+      //   this.readyResult();
+      // }
+      // if (val === 6) {
+      //   this.readyResult();
+      // }
     }
   },
   methods: {
@@ -442,15 +442,11 @@ export default {
       console.log(this.arrs);
     },
     isRedBlack() {
-      let r;
-      let t = setTimeout(() => {
-        clearTimeout(t);
-        this.rightIndex.forEach((val, index) => {
-          r = this.jujeZhu[index] / 1 - this.resultEnd[index].length;
-          if (val === this.forData[index].rightIndex) {
-            console.log("log--===");
-            console.log(val);
-            console.log(this.forData[index].rightIndex);
+      let ids = setTimeout(() => {
+        clearTimeout(ids);
+        this.forData.forEach((val, index) => {
+          let len = val.rightLength.length - 1;
+          if (val.rightLength[len] === val.rightLength[len - 1]) {
             if (this.forData[index].red === true) {
               this.$set(this.forData[index], "red", false);
               this.$set(this.forData[index], "black", true);
@@ -458,16 +454,38 @@ export default {
               this.$set(this.forData[index], "red", true);
             }
             return;
+          } else {
+            this.$set(this.forData[index], "red", false);
+            this.$set(this.forData[index], "black", false);
           }
-          // if (Math.abs(r) <= 19) {
-          //   this.$set(this.forData[index], "black", true);
-          //   return;
-          // }
-          this.$set(this.forData[index], "red", false);
-          this.$set(this.forData[index], "black", false);
-          // this.$set(this.forData[index], "black", false);
         });
       }, 1000);
+      // let r;
+      // let t = setTimeout(() => {
+      //   clearTimeout(t);
+      //   this.rightIndex.forEach((val, index) => {
+      //     r = this.jujeZhu[index] / 1 - this.resultEnd[index].length;
+      //     if (val === this.forData[index].rightIndex) {
+      //       console.log("log--===");
+      //       console.log(val);
+      //       console.log(this.forData[index].rightIndex);
+      //       if (this.forData[index].red === true) {
+      //         this.$set(this.forData[index], "red", false);
+      //         this.$set(this.forData[index], "black", true);
+      //       } else {
+      //         this.$set(this.forData[index], "red", true);
+      //       }
+      //       return;
+      //     }
+      //     // if (Math.abs(r) <= 19) {
+      //     //   this.$set(this.forData[index], "black", true);
+      //     //   return;
+      //     // }
+      //     this.$set(this.forData[index], "red", false);
+      //     this.$set(this.forData[index], "black", false);
+      //     // this.$set(this.forData[index], "black", false);
+      //   });
+      // }, 1000);
     },
     readyResult() {
       let t = setTimeout(() => {
@@ -495,6 +513,7 @@ export default {
         }
       });
       this.$set(this.forData[i_index], "rightIndex", arr.join(","));
+      this.forData[i_index].rightLength.push(arr.length);
     },
     getReset(getIsAll, i_index) {
       this.getIsAll(getIsAll, i_index);
@@ -544,6 +563,8 @@ export default {
       this.onlineCount++;
       this.ifok = "count-Ok";
       if (this.onlineCount >= 5) {
+        console.log("我要飞");
+        console.dir(this.forData);
         let timeid = setTimeout(() => {
           clearTimeout(timeid);
           this.markCreate.forEach((valx, index_x) => {
@@ -605,7 +626,7 @@ export default {
     getCreate(index) {
       this.markCreate.push(index);
       this.markCreate = [...new Set(this.markCreate)];
-      // console.log(this.markCreate);
+      // console.log(1);
       let params = this.forData[index];
 
       let resultArr = Array.from({ length: parseInt(params.num) }, () => {
@@ -642,7 +663,10 @@ export default {
             bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
             createNum: [],
             isRight: [],
-            rightIndex: ""
+            rightIndex: "",
+            rightLength: [],
+            black: false,
+            red: false
           };
         });
         this.successRong = Array.from({ length: 21 }, () => {
