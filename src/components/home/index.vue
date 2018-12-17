@@ -430,9 +430,9 @@ export default {
   methods: {
     startCQresult() {
       let arrs = this.CQresult.split(" ");
-      arrs.forEach((val, index) => {
+      arrs.forEach(async (val, index) => {
         this.ifok = "rea111dy";
-        this.getserverData(val);
+        await this.getserverData(val);
       });
     },
     goto() {
@@ -441,63 +441,30 @@ export default {
       console.log(a);
       console.log(this.arrs);
     },
-    isRedBlack() {
+    isRedBlack(resolve) {
       let ids = setTimeout(() => {
         clearTimeout(ids);
         this.forData.forEach((val, index) => {
           let len = val.rightLength.length - 1;
           if (val.rightLength[len] === val.rightLength[len - 1]) {
+            console.log(this.onlineCount);
+            console.log("this.onlineCount");
             if (this.forData[index].red === true) {
               this.$set(this.forData[index], "red", false);
               this.$set(this.forData[index], "black", true);
             } else {
               this.$set(this.forData[index], "red", true);
             }
-            return;
           } else {
             this.$set(this.forData[index], "red", false);
             this.$set(this.forData[index], "black", false);
           }
         });
+        this.ifok = "实战ok6or7";
+        resolve();
       }, 1000);
-      // let r;
-      // let t = setTimeout(() => {
-      //   clearTimeout(t);
-      //   this.rightIndex.forEach((val, index) => {
-      //     r = this.jujeZhu[index] / 1 - this.resultEnd[index].length;
-      //     if (val === this.forData[index].rightIndex) {
-      //       console.log("log--===");
-      //       console.log(val);
-      //       console.log(this.forData[index].rightIndex);
-      //       if (this.forData[index].red === true) {
-      //         this.$set(this.forData[index], "red", false);
-      //         this.$set(this.forData[index], "black", true);
-      //       } else {
-      //         this.$set(this.forData[index], "red", true);
-      //       }
-      //       return;
-      //     }
-      //     // if (Math.abs(r) <= 19) {
-      //     //   this.$set(this.forData[index], "black", true);
-      //     //   return;
-      //     // }
-      //     this.$set(this.forData[index], "red", false);
-      //     this.$set(this.forData[index], "black", false);
-      //     // this.$set(this.forData[index], "black", false);
-      //   });
-      // }, 1000);
     },
-    readyResult() {
-      let t = setTimeout(() => {
-        // this.jujeZhu = this.resultEnd;
-        clearTimeout(t);
-        this.forData.forEach((val, index) => {
-          this.jujeZhu[index] = this.resultEnd[index].length;
-          this.rightIndex.splice(index, 1, val.rightIndex);
-        });
-        this.ifok = "copyResult-ok";
-      }, 20000);
-    },
+    readyResult() {},
     getIsAll(isRightArr, i_index) {
       let arr = [];
       isRightArr.forEach((val, index) => {
@@ -534,48 +501,52 @@ export default {
         });
       });
 
-      // this.jujeZhu.splice(i_index, 1, re);
       this.resultEnd.splice(i_index, 1, re);
     },
     getserverData(data) {
-      // this.sanxingResult = data.substring(1, 4);
-      this.sanxingResult = data;
-      this.forData.forEach((val, index) => {
-        val.createNum.forEach((vals, indexs) => {
-          let r = vals.includes(this.sanxingResult);
-          if (r) {
-            val.isRight[indexs].push("对");
-          } else {
-            val.isRight[indexs].push("错");
-          }
-        });
-      });
-      if (this.forData[0].isRight[0].length > 4) {
-        console.log("succccc--");
-        console.dir(this.forData);
+      return new Promise(resolve => {
+        this.sanxingResult = data;
         this.forData.forEach((val, index) => {
-          this.getIsAll(val.isRight, index);
+          val.createNum.forEach((vals, indexs) => {
+            let r = vals.includes(this.sanxingResult);
+            if (r) {
+              val.isRight[indexs].push("对");
+            } else {
+              val.isRight[indexs].push("错");
+            }
+          });
         });
-      }
-      this.markCreate.forEach((valx, index_x) => {
-        this.getAgain(parseInt(valx));
-      });
-      this.onlineCount++;
-      this.ifok = "count-Ok";
-      if (this.onlineCount >= 5) {
-        console.log("我要飞");
-        console.dir(this.forData);
-        let timeid = setTimeout(() => {
-          clearTimeout(timeid);
+        if (this.forData[0].isRight[0].length > 4) {
+          this.forData.forEach((val, index) => {
+            this.getIsAll(val.isRight, index);
+          });
+        }
+        this.markCreate.forEach((valx, index_x) => {
+          this.getAgain(parseInt(valx));
+        });
+        this.onlineCount++;
+        this.ifok = "count-Ok";
+        if (this.onlineCount >= 5) {
+          console.log("我要飞");
+          console.dir(this.forData);
           this.markCreate.forEach((valx, index_x) => {
             this.getResultsRight(parseInt(valx));
           });
-          if (this.onlineCount === 6 || this.onlineCount === 7) {
-            this.isRedBlack();
+          if (this.onlineCount === 5) {
+            return resolve();
           }
-          this.ifok = "isRed-Ok";
-        }, 1000);
-      }
+          let timeid = setTimeout(() => {
+            clearTimeout(timeid);
+            if (this.onlineCount === 6 || this.onlineCount === 7) {
+              return this.isRedBlack(resolve);
+            }
+            this.ifok = "第5次ok";
+            resolve();
+          }, 1000);
+        } else {
+          resolve();
+        }
+      });
     },
     getAgain(index) {
       let params = this.forData[index];
