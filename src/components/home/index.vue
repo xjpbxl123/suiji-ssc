@@ -262,26 +262,7 @@ export default {
           isRight: [],
           rightIndex: ""
         },
-        {
-          num: 50,
-          geshu: 3,
-          bottomNum: 610,
-          rongC: { left: 1, right: 2 },
-          bg: { backgroundColor: "rgba(20, 77, 88, 0.7)" },
-          createNum: [],
-          isRight: [],
-          rightIndex: ""
-        },
-        {
-          num: 50,
-          bottomNum: 610,
-          geshu: 3,
-          rongC: { left: 1, right: 2 },
-          bg: { backgroundColor: "rgba(222, 55, 111, 0.7)" },
-          createNum: [],
-          isRight: [],
-          rightIndex: ""
-        },
+
         {
           num: 50,
           geshu: 3,
@@ -432,6 +413,8 @@ export default {
       let arrs = this.CQresult.split(" ");
       arrs.forEach(async (val, index) => {
         this.ifok = "rea111dy";
+        console.log("--====哈哈哈哈");
+        console.log(this.onlineCount);
         await this.getserverData(val);
       });
     },
@@ -529,6 +512,7 @@ export default {
         if (this.onlineCount >= 5) {
           console.log("我要飞");
           console.dir(this.forData);
+          console.dir(this.onlineCount);
           this.markCreate.forEach((valx, index_x) => {
             this.getResultsRight(parseInt(valx));
           });
@@ -541,7 +525,6 @@ export default {
               return this.isRedBlack(resolve);
             }
             this.ifok = "第5次ok";
-            resolve();
           }, 1000);
         } else {
           resolve();
@@ -658,6 +641,7 @@ export default {
       this.getStart();
       this.ifok = "第一次随机ok";
     });
+
     // this.$socket.eventOnByVue({
     //   "pianoClassroom.getonline": this.getserverData
     // });
