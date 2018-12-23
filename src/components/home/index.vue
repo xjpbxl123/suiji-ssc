@@ -14,25 +14,6 @@
     <div class="box-row">
       <div :style="val.bg" class="box-main" v-for="val,index in forData" :key="index">
         <div>
-          <!-- <button @click="getCreate(index)">创建</button> -->
-          <!-- <div>
-            <span>总组数</span>
-            <input type="text" v-model="val.num">
-          </div>
-          <div>
-            <span>大地注数</span>
-            <input type="text" v-model="val.bottomNum">
-          </div>
-          <div>
-            <span>大地个数</span>
-            <input type="text" v-model="val.geshu">
-          </div>-->
-          <!-- <div>
-            <span>容错</span>
-            <input type="text" v-model="val.rongC.left">
-            <span>-</span>
-            <input type="text" v-model="val.rongC.right">
-          </div>-->
           <div class="isAllright">
             <span>全对</span>
             <textarea class="allRight-t" ref="allRight" v-model="val.rightIndex"></textarea>
@@ -55,7 +36,7 @@
             <span>{{resultEnd[index].length}}</span>
             <button
               class="res_s"
-              :class="{isRed:val.red,isBlack:val.black}"
+              :class="{isRed:val.red,isYellow:val.yellow,isBlack:val.black}"
               @click="getResultCopy(index)"
             >复制</button>
           </div>
@@ -77,6 +58,9 @@
   background: blue;
 }
 .isBlack {
+  background: black;
+}
+.isYellow {
   background: yellow !important;
 }
 .allRight-t {
@@ -411,11 +395,11 @@ export default {
   methods: {
     startCQresult() {
       let arrs = this.CQresult.split(" ");
-      arrs.forEach(async (val, index) => {
+      arrs.forEach((val, index) => {
         this.ifok = "rea111dy";
-        console.log("--====哈哈哈哈");
+        console.log("this.onlineCount:");
         console.log(this.onlineCount);
-        await this.getserverData(val);
+        this.getserverData(val);
       });
     },
     goto() {
@@ -432,14 +416,21 @@ export default {
           if (val.rightLength[len] === val.rightLength[len - 1]) {
             console.log(this.onlineCount);
             console.log("this.onlineCount");
-            if (this.forData[index].red === true) {
-              this.$set(this.forData[index], "red", false);
+            if (this.forData[index].yellow === true) {
               this.$set(this.forData[index], "black", true);
+              this.$set(this.forData[index], "red", false);
+              this.$set(this.forData[index], "yellow", false);
             } else {
-              this.$set(this.forData[index], "red", true);
+              if (this.forData[index].red === true) {
+                this.$set(this.forData[index], "red", false);
+                this.$set(this.forData[index], "yellow", true);
+              } else {
+                this.$set(this.forData[index], "red", true);
+              }
             }
           } else {
             this.$set(this.forData[index], "red", false);
+            this.$set(this.forData[index], "yellow", false);
             this.$set(this.forData[index], "black", false);
           }
         });
@@ -473,6 +464,9 @@ export default {
       this.makeResult(r, index);
     },
     getResultsRight(index) {
+      if (!!!this.forData[index].rightIndex.replace(/\s/g, "")) {
+        return this.resultEnd.splice(index, 1, ["787"]);
+      }
       let r = this.forData[index].rightIndex.replace(/\s/g, "").split(",");
       this.makeResult(r, index);
     },
@@ -521,7 +515,7 @@ export default {
           }
           let timeid = setTimeout(() => {
             clearTimeout(timeid);
-            if (this.onlineCount === 6 || this.onlineCount === 7) {
+            if (this.onlineCount >= 6) {
               return this.isRedBlack(resolve);
             }
             this.ifok = "第5次ok";
@@ -620,7 +614,8 @@ export default {
             rightIndex: "",
             rightLength: [],
             black: false,
-            red: false
+            red: false,
+            yellow: false
           };
         });
         this.successRong = Array.from({ length: 21 }, () => {
@@ -638,8 +633,11 @@ export default {
   },
   created() {
     this.ResetData().then(() => {
-      this.getStart();
-      this.ifok = "第一次随机ok";
+      let id = setTimeout(() => {
+        clearTimeout(id);
+        this.getStart();
+        this.ifok = "第一次随机ok";
+      }, 2000);
     });
 
     // this.$socket.eventOnByVue({
