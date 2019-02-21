@@ -12,7 +12,7 @@
     </div>
     <div class="link-on" @click="getSend">链接服务-------链接服务</div>
     <div class="box-row">
-      <div :style="val.bg" class="box-main" v-for="val,index in forData" :key="index">
+      <div :style="val.bg" class="box-main" v-for="(val,index) in forData" :key="index">
         <div>
           <div class="isAllright">
             <span>全对</span>
@@ -36,7 +36,7 @@
             <span>{{resultEnd[index].length}}</span>
             <button
               class="res_s"
-              :class="{isRed:val.red,isYellow:val.yellow,isBlack:val.black}"
+              :class="{isRed:val.red,isYellow:val.yellow,isPink:val.pink}"
               @click="getResultCopy(index)"
             >复制</button>
           </div>
@@ -55,10 +55,10 @@
   margin-left: 100px;
 }
 .res_s {
-  background: blue;
+  background: pink;
 }
-.isBlack {
-  background: black;
+.isPink {
+  background: blue;
 }
 .isYellow {
   background: yellow !important;
@@ -405,8 +405,11 @@ export default {
     goto() {
       let a = this.arrs;
       a.splice(0, 1);
-      console.log(a);
-      console.log(this.arrs);
+    },
+    resetColor(color = { pink: false, red: false, yellow: false }, index) {
+      this.$set(this.forData[index], "pink", color.pink);
+      this.$set(this.forData[index], "red", color.red);
+      this.$set(this.forData[index], "yellow", color.yellow);
     },
     isRedBlack(resolve) {
       let ids = setTimeout(() => {
@@ -414,24 +417,30 @@ export default {
         this.forData.forEach((val, index) => {
           let len = val.rightLength.length - 1;
           if (val.rightLength[len] === val.rightLength[len - 1]) {
-            console.log(this.onlineCount);
-            console.log("this.onlineCount");
             if (this.forData[index].yellow === true) {
-              this.$set(this.forData[index], "black", true);
-              this.$set(this.forData[index], "red", false);
-              this.$set(this.forData[index], "yellow", false);
+              this.resetColor({ pink: true, red: false, yellow: false }, index);
             } else {
               if (this.forData[index].red === true) {
-                this.$set(this.forData[index], "red", false);
-                this.$set(this.forData[index], "yellow", true);
+                this.resetColor(
+                  { pink: false, red: false, yellow: true },
+                  index
+                );
+              } else if (this.forData[index].pink === true) {
+                this.resetColor(
+                  { pink: true, red: false, yellow: false },
+                  index
+                );
               } else {
-                this.$set(this.forData[index], "red", true);
+                this.resetColor(
+                  { pink: false, red: true, yellow: false },
+                  index
+                );
               }
             }
           } else {
             this.$set(this.forData[index], "red", false);
             this.$set(this.forData[index], "yellow", false);
-            this.$set(this.forData[index], "black", false);
+            this.$set(this.forData[index], "pink", false);
           }
         });
         this.ifok = "实战ok6or7";
@@ -503,6 +512,8 @@ export default {
         });
         this.onlineCount++;
         this.ifok = "count-Ok";
+        console.log(this.forData);
+        console.log("11111");
         if (this.onlineCount >= 5) {
           console.log("我要飞");
           console.dir(this.forData);
@@ -613,7 +624,7 @@ export default {
             isRight: [],
             rightIndex: "",
             rightLength: [],
-            black: false,
+            pink: false,
             red: false,
             yellow: false
           };
