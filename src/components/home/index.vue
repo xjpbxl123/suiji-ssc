@@ -10,8 +10,9 @@
       <button @click="startCQresult">computed</button>
       <button class="bbbttt" v-text="ifok"></button>
       <button class="isFirstWindow" @click="setFirstWindow" v-text="isFirstWindow?'第一位':'任意位'"></button>
+      <button v-if="acceptSocket">被socket</button>
     </div>
-    <div class="link-on" @click="getSend">链接服务-------链接服务</div>
+    <!-- <div class="link-on" @click="getSend">链接服务-------链接服务</div> -->
     <div class="box-row">
       <div :style="val.bg" class="box-main" v-for="(val,index) in forData" :key="index">
         <div>
@@ -21,14 +22,14 @@
             <!-- <button @click="getReset(val.isRight,index)" class="reset">reset</button> -->
             <button @click="getCopyallRight(index)" class="getCopyallRight">复制</button>
           </div>
-          <div>
+          <!-- <div>
             <button @click="getResult(index)" class="startB">容错</button>
             <input type="text" value="1">
             <span>--</span>
             <input type="text" value="8">
-          </div>
+          </div>-->
           <div>
-            <div>容错对应的索引</div>
+            <!-- <div>容错对应的索引</div> -->
             <textarea v-model="successRong[index]" class="result-tt">111111</textarea>
           </div>
           <div class="success-re">
@@ -69,6 +70,9 @@
   width: 30px;
   height: 30px;
 }
+.result-tt {
+  height: 50px;
+}
 .link-on {
   background: #ccc;
   height: 30px;
@@ -92,6 +96,7 @@
 }
 .result-t {
   width: 50px;
+  height: 30px;
   margin-right: 37px;
 }
 .result-tt {
@@ -137,6 +142,7 @@ input {
   width: 197px;
   margin-bottom: 10px;
   margin-right: 7px;
+  border-bottom: 5px solid red;
   /* flex: 1; */
 }
 textarea {
@@ -166,6 +172,9 @@ textarea {
   width: 60px;
   height: 60px;
 }
+.isFirstWindow {
+  margin-right: 20px;
+}
 </style>
 <script>
 import { makeDadi, ARRNUM } from "./index.js";
@@ -174,6 +183,8 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
+      totalNum: 30, //21
+      acceptSocket: false,
       isFirstWindow: false,
       otherWindowNum: "",
       CQresult: "12345",
@@ -390,9 +401,19 @@ export default {
     onlineCount(val) {}
   },
   methods: {
+    otherWindowStart() {
+      let arrs = this.otherWindowNum.split(" ");
+      arrs.forEach((val, index) => {
+        this.ifok = "rea111dy";
+        this.getserverData(val);
+      });
+    },
     startCQresult() {
-      if (!this.isFirstWindow) 1;
-      this.getSend(this.CQresult);
+      if (!this.isFirstWindow && this.CQresult === "12345") {
+        this.acceptSocket = false;
+        return this.otherWindowStart();
+      }
+      this.isFirstWindow && this.getSend(this.CQresult);
       let arrs = this.CQresult.split(" ");
       arrs.forEach((val, index) => {
         this.ifok = "rea111dy";
@@ -509,8 +530,7 @@ export default {
         });
         this.onlineCount++;
         this.ifok = "count-Ok";
-        console.log(this.forData);
-        console.log("11111");
+
         if (this.onlineCount >= 5) {
           console.log("我要飞");
           console.dir(this.forData);
@@ -542,7 +562,7 @@ export default {
       this.$set(params, "createNum", resultArr);
     },
     getSend(num) {
-      this.$socket.send("pianoClassroom.getonline", { num: num });
+      this.$socket.send("pianoClassroom.getFirst", { num: num });
     },
     getCopy() {
       this.$refs.textarea.select();
@@ -604,13 +624,13 @@ export default {
       });
     },
     getStart() {
-      Array.from({ length: 21 }, (val, index) => {
+      Array.from({ length: this.totalNum }, (val, index) => {
         this.getCreate(index);
       });
     },
     ResetData() {
       return new Promise(resolve => {
-        this.forData = Array.from({ length: 21 }, (val, index) => {
+        this.forData = Array.from({ length: this.totalNum }, (val, index) => {
           return {
             num: 50,
             bottomNum: 610,
@@ -626,10 +646,10 @@ export default {
             yellow: false
           };
         });
-        this.successRong = Array.from({ length: 21 }, () => {
+        this.successRong = Array.from({ length: this.totalNum }, () => {
           return "";
         });
-        this.resultEnd = Array.from({ length: 21 }, () => {
+        this.resultEnd = Array.from({ length: this.totalNum }, () => {
           return [];
         });
         let id = setTimeout(() => {
@@ -640,16 +660,17 @@ export default {
     },
     setSocket() {
       this.$socket.eventOnByVue({
-        "pianoClassroom.getonline": data => {
-          console.log(11111111233332);
+        "pianoClassroom.getFirst": data => {
           if (this.isFirstWindow) return;
+          this.acceptSocket = true;
           this.otherWindowNum = data.num;
-          console.log(data);
-          console.log("----==kdskdk");
         }
       });
     },
     setFirstWindow(arrNum) {
+      if (this.isFirstWindow) {
+        return this.getSend(this.CQresult);
+      }
       this.isFirstWindow = true;
     }
   },
