@@ -9,6 +9,7 @@
       <input class="CQresult" v-model="CQresult" type="text">
       <button @click="startCQresult">computed</button>
       <button class="bbbttt" v-text="ifok"></button>
+      <button class="isFirstWindow" @click="setFirstWindow" v-text="isFirstWindow?'第一位':'任意位'"></button>
     </div>
     <div class="link-on" @click="getSend">链接服务-------链接服务</div>
     <div class="box-row">
@@ -32,7 +33,7 @@
           </div>
           <div class="success-re">
             <div>结果</div>
-            <textarea v-model="resultEnd[index].join(' ')" ref="numResult" class="result-t"></textarea>
+            <textarea v-text="resultEnd[index].join(' ')" ref="numResult" class="result-t"></textarea>
             <span>{{resultEnd[index].length}}</span>
             <button
               class="res_s"
@@ -49,6 +50,7 @@
 <style scoped>
 .bbbttt {
   margin-left: 100px;
+  margin-right: 50px;
 }
 .CQresult {
   width: 100px;
@@ -172,6 +174,8 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
+      isFirstWindow: false,
+      otherWindowNum: "",
       CQresult: "12345",
       arrs: [{ x: 1 }, { y: 2 }],
       onlineCount: 0,
@@ -383,22 +387,15 @@ export default {
     };
   },
   watch: {
-    onlineCount(val) {
-      // if (val === 5) {
-      //   this.readyResult();
-      // }
-      // if (val === 6) {
-      //   this.readyResult();
-      // }
-    }
+    onlineCount(val) {}
   },
   methods: {
     startCQresult() {
+      if (!this.isFirstWindow) 1;
+      this.getSend(this.CQresult);
       let arrs = this.CQresult.split(" ");
       arrs.forEach((val, index) => {
         this.ifok = "rea111dy";
-        console.log("this.onlineCount:");
-        console.log(this.onlineCount);
         this.getserverData(val);
       });
     },
@@ -544,8 +541,8 @@ export default {
       });
       this.$set(params, "createNum", resultArr);
     },
-    getSend() {
-      // this.$socket.send("pianoClassroom.getonline", { a: 12 });
+    getSend(num) {
+      this.$socket.send("pianoClassroom.getonline", { num: num });
     },
     getCopy() {
       this.$refs.textarea.select();
@@ -640,8 +637,23 @@ export default {
           resolve();
         }, 300);
       });
+    },
+    setSocket() {
+      this.$socket.eventOnByVue({
+        "pianoClassroom.getonline": data => {
+          console.log(11111111233332);
+          if (this.isFirstWindow) return;
+          this.otherWindowNum = data.num;
+          console.log(data);
+          console.log("----==kdskdk");
+        }
+      });
+    },
+    setFirstWindow(arrNum) {
+      this.isFirstWindow = true;
     }
   },
+
   created() {
     this.ResetData().then(() => {
       let id = setTimeout(() => {
@@ -650,6 +662,8 @@ export default {
         this.ifok = "第一次随机ok";
       }, 2000);
     });
+
+    this.setSocket();
 
     // this.$socket.eventOnByVue({
     //   "pianoClassroom.getonline": this.getserverData
