@@ -82,6 +82,7 @@ export default class Socket {
     }
     this.socket = io(this.url)
     this.socket.on('connect', () => {
+
       this.status = Status.OPEN
       this.sendCache.forEach(cache => {
         this.send(cache.method, cache.data)
@@ -91,6 +92,7 @@ export default class Socket {
       this.log('socketIo connect:', this.socket.id)
     })
     this.socket.on('connect_error', () => {
+
       this.status = Status.DISCONNECT
       this.event.emit('changeStatus', this.status)
       this.log('socketIo disconnect:', this.socket.id)

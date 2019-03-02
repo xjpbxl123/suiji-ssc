@@ -183,7 +183,7 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
-      totalNum: 30, //21
+      totalNum: 33, //21
       acceptSocket: false,
       isFirstWindow: false,
       otherWindowNum: "",
