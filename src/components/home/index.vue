@@ -40,7 +40,7 @@
             <span>{{resultEnd[index].length}}</span>
             <button
               class="res_s"
-              :class="{isRed:val.red,isYellow:val.yellow,isPink:val.pink}"
+              :class="{isRed:val.red,isYellow:val.yellow,isBlue:val.blue,isPurple:val.purple,isBlack:val.black}"
               @click="getResultCopy(index)"
             >复制</button>
           </div>
@@ -55,15 +55,21 @@
   margin-left: 100px;
   margin-right: 50px;
 }
+.isBlack {
+  background: black !important;
+}
 .CQresult {
   width: 100px;
   margin-left: 100px;
 }
 .res_s {
-  background: pink;
+  background: pink !important;
 }
-.isPink {
-  background: blue;
+.isBlue {
+  background: blue !important;
+}
+.isPurple {
+  background: purple !important;
 }
 .isYellow {
   background: yellow !important;
@@ -185,6 +191,7 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
+      allColor: ['red', 'yellow', 'blue', 'purple', 'black'],
       nowNum: '',
       totalNum: 33, //21
       acceptSocket: false,
@@ -439,46 +446,47 @@ export default {
       let a = this.arrs;
       a.splice(0, 1);
     },
-    resetColor(color = { pink: false, red: false, yellow: false }, index) {
-      this.$set(this.forData[index], "pink", color.pink);
-      this.$set(this.forData[index], "red", color.red);
-      this.$set(this.forData[index], "yellow", color.yellow);
+    resetColor(color = {}, index_i) {
+      let resultColor = Object.keys(color)[0]
+      this.allColor.forEach((val, index) => {
+        if (val === resultColor) return this.$set(this.forData[index_i], val, true);
+        this.$set(this.forData[index_i], val, false);
+      })
+
     },
     isRedBlack(resolve) {
-      let ids = setTimeout(() => {
-        clearTimeout(ids);
-        this.forData.forEach((val, index) => {
-          let len = val.rightLength.length - 1;
-          if (val.rightLength[len] === val.rightLength[len - 1]) {
-            if (this.forData[index].yellow === true) {
-              this.resetColor({ pink: true, red: false, yellow: false }, index);
-            } else {
-              if (this.forData[index].red === true) {
-                this.resetColor(
-                  { pink: false, red: false, yellow: true },
-                  index
-                );
-              } else if (this.forData[index].pink === true) {
-                this.resetColor(
-                  { pink: true, red: false, yellow: false },
-                  index
-                );
-              } else {
-                this.resetColor(
-                  { pink: false, red: true, yellow: false },
-                  index
-                );
-              }
-            }
-          } else {
-            this.$set(this.forData[index], "red", false);
-            this.$set(this.forData[index], "yellow", false);
-            this.$set(this.forData[index], "pink", false);
+      this.forData.forEach((val, index) => {
+        let len = val.rightLength.length - 1;
+        let { red, yellow, blue, purple, black } = val
+
+        if (val.rightLength[len] === val.rightLength[len - 1]) {
+
+          if (red === true) {
+            this.resetColor({ yellow: red }, index);
           }
-        });
-        this.ifok = "实战ok6or7";
-        resolve();
-      }, 1000);
+          else if (yellow === true) {
+            this.resetColor({ blue: yellow }, index);
+          }
+          else if (blue === true) {
+            this.resetColor({ purple: blue }, index);
+          }
+          else if (purple === true) {
+            this.resetColor({ black: purple }, index);
+          }
+          else if (black === true) {
+            this.resetColor({ black }, index);
+          }
+          else {
+            this.resetColor({ red: true }, index);
+          }
+        } else {
+          this.allColor.forEach((val) => {
+            this.$set(this.forData[index], val, false);
+          })
+        }
+      });
+      this.ifok = "实战ok6or7";
+      resolve();
     },
     readyResult() { },
     getIsAll(isRightArr, i_index) {
@@ -535,7 +543,7 @@ export default {
             }
           });
         });
-        if (this.forData[0].isRight[0].length > 4) {
+        if (this.forData[0].isRight[0].length >= 4) {
           this.forData.forEach((val, index) => {
             this.getIsAll(val.isRight, index);
           });
@@ -544,8 +552,8 @@ export default {
           this.getAgain(parseInt(valx));
         });
         this.onlineCount++;
+        console.log(this.forData)
         this.ifok = "count-Ok";
-
         if (this.onlineCount >= 5) {
           console.log("我要飞");
           console.dir(this.forData);
@@ -553,16 +561,14 @@ export default {
           this.markCreate.forEach((valx, index_x) => {
             this.getResultsRight(parseInt(valx));
           });
-          if (this.onlineCount === 5) {
-            return resolve();
+          // if (this.onlineCount === 5) {
+          //   return resolve();
+          // }
+          if (this.onlineCount >= 5) {
+            console.log(1000666)
+            return this.isRedBlack(resolve);
           }
-          let timeid = setTimeout(() => {
-            clearTimeout(timeid);
-            if (this.onlineCount >= 6) {
-              return this.isRedBlack(resolve);
-            }
-            this.ifok = "第5次ok";
-          }, 1000);
+          this.ifok = "第5次ok";
         } else {
           resolve();
         }
@@ -659,9 +665,11 @@ export default {
             isRight: [],
             rightIndex: "",
             rightLength: [],
-            pink: false,
+            blue: false,
             red: false,
-            yellow: false
+            yellow: false,
+            purple: false,
+            black: false
           };
         });
         this.successRong = Array.from({ length: this.totalNum }, () => {
