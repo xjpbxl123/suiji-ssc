@@ -1,10 +1,18 @@
 <template>
   <div class="login">
     <div class="div-rc">
-      <input class="rc" type="text" v-model="lowR">
-      <input type="button">
-      <input class="rc" type="text" v-model="highR">
-      <button @click="getStart">开始交集</button>
+      <div class="computations-div">
+        <button @click="getReduce('low')" class="computations">-</button>
+        <input class="rc" type="text" v-model="lowR">
+        <button @click="getAdd('low')" class="computations">+</button>
+        <button>--分割线--</button>
+        <button @click="getReduce('high')" class="computations">-</button>
+        <input class="rc" type="text" v-model="highR">
+        <button @click="getAdd('high')" class="computations">+</button>
+      </div>
+
+      <button class="run-start" @click="getStart">开始交集</button>
+      <button class="run-start" @click="getClear">清空所有</button>
       <button class="tx" v-text="this.resultData.length"></button>
       <textarea v-text="this.resultData.join(' ')" class="txtx" ref="tx"></textarea>
       <button @click="getCopy">复制</button>
@@ -14,6 +22,7 @@
         <button class="Allnum" v-text="getNum(val)"></button>
         <button @click="getWork(false,index)">清空</button>
         <textarea v-model="val.num" class="tarea"></textarea>
+        <input class="check" type="checkbox" v-model="val.isChecked">
       </div>
     </div>
   </div>
@@ -34,15 +43,30 @@ export default {
     };
   },
   methods: {
+    getReduce(status) {
+      this.lowR = Number(this.lowR)
+      this.highR = Number(this.highR)
+      status === 'low' ? this.lowR === 0 ? 0 : (this.lowR -= 1) : this.highR === 0 ? 0 : (this.highR -= 1)
+
+    },
+    getAdd(status) {
+      status === 'low' ? (this.lowR += 1) : (this.highR += 1)
+
+    },
+    getClear() {
+      this.dataArray = Array.from({ length: 50 }, () => {
+        return { num: "", isChecked: true };
+      });
+      this.comData = []
+    },
     getStart() {
+      if (Number(this.lowR) > Number(this.highR)) return console.error('容错参数出错')
       this.comData = []
       this.resultData = []
-      let re
+      let result
       this.dataArray.forEach((val) => {
-        re = val.num.split(' ')
-        if (re.length > 10) {
-          this.comData.push(re)
-        }
+        result = val.num.split(' ')
+        if (result.length > 10 && val.isChecked) this.comData.push(result)
       })
       this.getComputed(this.comData, this.lowR / 1, this.highR / 1)
     },
@@ -73,8 +97,8 @@ export default {
     }
   },
   created() {
-    this.dataArray = Array.from({ length: 30 }, () => {
-      return { num: "" };
+    this.dataArray = Array.from({ length: 50 }, () => {
+      return { num: "", isChecked: true };
     });
   },
   mounted() {
@@ -85,6 +109,19 @@ export default {
 
 
 <style scoped lang="scss">
+.check {
+  margin-left: 7px;
+}
+.computations {
+  background: pink;
+}
+.computations-div {
+  margin-right: 30px;
+}
+.run-start {
+  background: skyblue;
+  margin-right: 20px;
+}
 .rc {
   width: 20px;
   height: 20px;
@@ -96,6 +133,7 @@ export default {
   margin-right: 50px;
 }
 .div-rc {
+  margin-top: 70px;
   margin-left: 50px;
   margin-bottom: 40px;
   display: flex;
@@ -110,12 +148,17 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   .item-div {
+    height: 76px;
     display: flex;
-    align-self: center;
-    margin-bottom: 30px;
+    align-items: center;
+    margin-bottom: 15px;
     margin-left: 20px;
+    > button {
+      height: 31px;
+    }
   }
   .tarea {
+    width: 70px;
   }
 }
 </style>
