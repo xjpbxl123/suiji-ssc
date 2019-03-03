@@ -414,6 +414,7 @@ export default {
       });
     },
     otherWindowStart() {
+      this.acceptSocket = false;
       let arrs = this.otherWindowNum.split(" ");
       this.nowNum = this.otherWindowNum
       arrs.forEach((val, index) => {
@@ -688,7 +689,7 @@ export default {
         "pianoClassroom.lazy": data => {
           if (this.isFirstWindow) return this.isLazyEnd = data.isEnd;;
           if (this.nowNum === this.otherWindowNum) return
-          this.startCQresult();
+          this.otherWindowStart();
         }
       });
     },

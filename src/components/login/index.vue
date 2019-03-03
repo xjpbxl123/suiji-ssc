@@ -16,6 +16,11 @@
       <button class="tx" v-text="this.resultData.length"></button>
       <textarea v-text="this.resultData.join(' ')" class="txtx" ref="tx"></textarea>
       <button @click="getCopy">复制</button>
+
+      <div class="total">
+        <button>{{allTotal}}</button>
+        <button></button>
+      </div>
     </div>
     <div class="main">
       <div class="item-div" v-for="(val,index) in dataArray" :key="index">
@@ -42,6 +47,17 @@ export default {
       resultData: []
     };
   },
+  computed: {
+    allTotal() {
+      let result = []
+      this.dataArray.forEach((val) => {
+        if (val.num.split(' ').length > 10 && val.isChecked) {
+          result = result.concat(val.num.split(' '))
+        }
+      })
+      return result.length || 0
+    }
+  },
   methods: {
     getReduce(status) {
       this.lowR = Number(this.lowR)
@@ -50,6 +66,8 @@ export default {
 
     },
     getAdd(status) {
+      this.lowR = Number(this.lowR)
+      this.highR = Number(this.highR)
       status === 'low' ? (this.lowR += 1) : (this.highR += 1)
 
     },
@@ -109,6 +127,9 @@ export default {
 
 
 <style scoped lang="scss">
+.total {
+  margin-left: 20px;
+}
 .check {
   margin-left: 7px;
 }
@@ -130,7 +151,7 @@ export default {
   margin-left: 100px;
 }
 .txtx {
-  margin-right: 50px;
+  margin-right: 20px;
 }
 .div-rc {
   margin-top: 70px;
