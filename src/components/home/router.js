@@ -1,4 +1,4 @@
 export default {
-    path:'/',
-    component:require('./index.vue').default
+  path: '/',
+  component: require('./index.vue').default
 }

@@ -10,7 +10,9 @@
       <button @click="startCQresult">computed</button>
       <button class="bbbttt" v-text="ifok"></button>
       <button class="isFirstWindow" @click="setFirstWindow" v-text="isFirstWindow?'第一位':'任意位'"></button>
-      <button v-if="acceptSocket">被socket</button>
+      <button v-show="acceptSocket">被socket</button>
+      <button v-show="isFirstWindow" v-text="isLazyEnd?'懒人end':'懒人ing'" @click="getLazy"></button>
+      <button @click="getRouter" style="{marginLeft:400px}">交集容错</button>
     </div>
     <!-- <div class="link-on" @click="getSend">链接服务-------链接服务</div> -->
     <div class="box-row">
@@ -183,9 +185,11 @@ import { setTimeout, clearTimeout } from "timers";
 export default {
   data() {
     return {
+      nowNum: '',
       totalNum: 33, //21
       acceptSocket: false,
       isFirstWindow: false,
+      isLazyEnd: false,
       otherWindowNum: "",
       CQresult: "12345",
       arrs: [{ x: 1 }, { y: 2 }],
@@ -398,11 +402,20 @@ export default {
     };
   },
   watch: {
-    onlineCount(val) {}
+    onlineCount(val) { }
   },
   methods: {
+    getRouter() {
+      this.$router.push({ path: "/login" });
+    },
+    getLazy() {
+      this.$socket.send("pianoClassroom.lazy", {
+        isLazy: "lazy"
+      });
+    },
     otherWindowStart() {
       let arrs = this.otherWindowNum.split(" ");
+      this.nowNum = this.otherWindowNum
       arrs.forEach((val, index) => {
         this.ifok = "rea111dy";
         this.getserverData(val);
@@ -413,7 +426,8 @@ export default {
         this.acceptSocket = false;
         return this.otherWindowStart();
       }
-      this.isFirstWindow && this.getSend(this.CQresult);
+      this.isFirstWindow && this.getSend(this.CQresult, true);
+      this.isLazyEnd = false;
       let arrs = this.CQresult.split(" ");
       arrs.forEach((val, index) => {
         this.ifok = "rea111dy";
@@ -465,7 +479,7 @@ export default {
         resolve();
       }, 1000);
     },
-    readyResult() {},
+    readyResult() { },
     getIsAll(isRightArr, i_index) {
       let arr = [];
       isRightArr.forEach((val, index) => {
@@ -561,8 +575,11 @@ export default {
       });
       this.$set(params, "createNum", resultArr);
     },
-    getSend(num) {
-      this.$socket.send("pianoClassroom.getFirst", { num: num });
+    getSend(num, resetFirst) {
+      this.$socket.send("pianoClassroom.getFirst", {
+        num: num,
+        resetFirst: resetFirst
+      });
     },
     getCopy() {
       this.$refs.textarea.select();
@@ -661,9 +678,17 @@ export default {
     setSocket() {
       this.$socket.eventOnByVue({
         "pianoClassroom.getFirst": data => {
+          console.log('wokk')
           if (this.isFirstWindow) return;
           this.acceptSocket = true;
           this.otherWindowNum = data.num;
+        }
+      });
+      this.$socket.eventOnByVue({
+        "pianoClassroom.lazy": data => {
+          if (this.isFirstWindow) return this.isLazyEnd = data.isEnd;;
+          if (this.nowNum === this.otherWindowNum) return
+          this.startCQresult();
         }
       });
     },
@@ -683,12 +708,7 @@ export default {
         this.ifok = "第一次随机ok";
       }, 2000);
     });
-
     this.setSocket();
-
-    // this.$socket.eventOnByVue({
-    //   "pianoClassroom.getonline": this.getserverData
-    // });
   },
   components: {}
 };
